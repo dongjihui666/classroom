@@ -1,13 +1,17 @@
 package com.dong.eduservice.controller;
 
 
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.dong.commonutils.R;
 import com.dong.eduservice.entity.EduTeacher;
 import com.dong.eduservice.service.EduTeacherService;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +23,7 @@ import java.util.List;
  * @author testjava
  * @since 2022-02-23
  */
+@Api("讲师管理")
 @RestController
 @RequestMapping("/eduservice/teacher")
 public class EduTeacherController {
@@ -30,12 +35,40 @@ public class EduTeacherController {
     //1 查询讲师所有数据
     //rest风格
     @GetMapping("findAll")
-    public List<EduTeacher> findAllTeacher(){
+    @ApiOperation(value = "讲师查询")
+    public R findAllTeacher(){
 
         //调用service的方法实现查询所有操作
         List<EduTeacher> list = teacherService.list(null);
-        return list;
+        return R.ok().data("items",list);
     }
+    //2 (配置逻辑删除插件 config)讲师逻辑删除
+    @ApiOperation(value = "逻辑删除")
+    @DeleteMapping("{id}")
+    public R removeById(@ApiParam(name = "id",value = "讲师ID",required = true) @PathVariable String id){
+
+        boolean flag =  teacherService.removeById(id);
+        return flag?R.ok():R.error();
+    }
+    //分页查询
+    @ApiOperation(value = "讲师分页查询")
+    @GetMapping("pageTeacher/{page}/{limit}")
+    public R pageList(@ApiParam(name = "page",value = "当前页码",required = true)
+                      @PathVariable Long page,
+                      @ApiParam(name = "limit",value = "每页记录数",required = true)
+                      @PathVariable Long limit){
+         //创建page对象
+        Page<EduTeacher> pageTeacher = new Page<>(page,limit);
+        //调用方法实现分页
+        //调用方法时候,底层封装,把分页所有数据封装到pageTeacheer对象里面
+        teacherService.page(pageTeacher,null);
+        long total = pageTeacher.getTotal();//总记录数
+        List<EduTeacher> records = pageTeacher.getRecords();//每页List集合数据
+        return R.ok().data("total",total).data("rows",records);
+
+
+    }
+
 
 }
 
