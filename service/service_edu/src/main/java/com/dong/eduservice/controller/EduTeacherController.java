@@ -2,15 +2,17 @@ package com.dong.eduservice.controller;
 
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dong.commonutils.R;
 import com.dong.eduservice.entity.EduTeacher;
+import com.dong.eduservice.entity.vo.TeacherQuery;
 import com.dong.eduservice.service.EduTeacherService;
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,6 +69,45 @@ public class EduTeacherController {
         return R.ok().data("total",total).data("rows",records);
 
 
+    }
+    //4条件查询带分页
+    @GetMapping("pageTeacherCondition/{current}/{limit}")
+    @ApiOperation("分页讲师列表")
+    public R pageTeacherCondition(@PathVariable long current, @PathVariable long limit, TeacherQuery teacherQuery){
+
+        //创建page对象
+        Page<EduTeacher> pageTeacher = new Page<>(current, limit);
+        //构建条件
+        QueryWrapper<EduTeacher> wrapper = new QueryWrapper<>();
+        //wrapper 多条件组成查询
+        //mybatis动态SQL
+        //判断条件值是否为空,如果不为空拼接条件
+        String name = teacherQuery.getName();
+        Integer level = teacherQuery.getLevel();
+        String begin = teacherQuery.getBegin();
+        String end = teacherQuery.getEnd();
+        if (!StringUtils.isEmpty(name)){
+            //构建条件
+            wrapper.like("name",name);
+        }
+        if (!StringUtils.isEmpty(level)){
+            //构建条件
+            wrapper.eq("level",level);
+        }
+        if (!StringUtils.isEmpty(begin)){
+            //构建条件  ge 大于等于
+            wrapper.ge("gmt_create",begin);
+        }
+        if (!StringUtils.isEmpty(end)){
+            //构建条件 le 小于等于
+            wrapper.le("gmt_create",end);
+        }
+
+        //调用方法实现条件查询分页
+        teacherService.page(pageTeacher,wrapper);
+        long total = pageTeacher.getTotal();//总记录数
+        List<EduTeacher> records =  pageTeacher.getRecords();//数据list集合
+        return R.ok().data("total",total).data("records",records);
     }
 
 
