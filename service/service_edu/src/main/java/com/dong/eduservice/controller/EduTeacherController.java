@@ -120,7 +120,7 @@ public class EduTeacherController {
 
     }
     //讲师修改功能 1 根据讲师ID查询 2 实现讲师的修改功能
-    @GetMapping("{id}")
+    @GetMapping("getTeacher/{id}")
     @ApiOperation(value = "根据ID查询讲师")
     public R getById(@ApiParam(name = "id",value = "讲师ID",required = true)
             @PathVariable String id){
@@ -129,14 +129,12 @@ public class EduTeacherController {
     }
 
     //根据ID修改讲师功能
-    @PutMapping("{id}")
+    @PostMapping("updateTeacher")
     @ApiOperation(value = "根据ID修改讲师")
-    public R updateId(@ApiParam(name = "id",value = "讲师id",required = true)
-            @PathVariable String id,
-                      @ApiParam(name= "teacher",value = "讲师对象",required = true)
+    public R updateId(@ApiParam(name= "teacher",value = "讲师对象",required = true)
                       @RequestBody EduTeacher eduTeacher){
-        teacherService.updateById(eduTeacher);
-        return R.ok();
+        boolean flag = teacherService.updateById(eduTeacher);
+        return flag?R.ok():R.error();
     }
 
 }
