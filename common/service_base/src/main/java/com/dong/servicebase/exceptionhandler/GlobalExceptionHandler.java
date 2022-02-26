@@ -1,6 +1,7 @@
 package com.dong.servicebase.exceptionhandler;
 
 import com.dong.commonutils.R;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +20,7 @@ import javax.jws.HandlerChain;
  * 当将异常抛到controller时,可以对异常进行统一处理,规定返回的json格式或是跳转到一个错误页面
  */
 @ControllerAdvice
+@Slf4j //表示里面用到SL44J
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = GuliException.class)
     @ResponseBody
     public R error(GuliException e){
+        log.error(e.getMessage());//异常输出语句
         e.printStackTrace();
         return R.error().message(e.getMsg()).code(e.getCode());
     }
