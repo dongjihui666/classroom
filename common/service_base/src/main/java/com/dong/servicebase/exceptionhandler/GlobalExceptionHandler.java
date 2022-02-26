@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.jws.HandlerChain;
+
 /**
  * 统一异常处理类
  */
@@ -31,4 +33,12 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return R.error().message("执行了ArithmeticException自定义异常");
     }
+    //添加自定义异常
+    @ExceptionHandler(value = GuliException.class)
+    @ResponseBody
+    public R error(GuliException e){
+        e.printStackTrace();
+        return R.error().message(e.getMsg()).code(e.getCode());
+    }
+
 }
