@@ -24,4 +24,11 @@ public class GlobalExceptionHandler {
         e.printStackTrace();//打印异常
         return R.error().message("执行了全局异常处理..");
     }
+    //特定异常
+    @ExceptionHandler(value = ArithmeticException.class)
+    @ResponseBody
+    public R error(ArithmeticException e){
+        e.printStackTrace();
+        return R.error().message("执行了ArithmeticException自定义异常");
+    }
 }
