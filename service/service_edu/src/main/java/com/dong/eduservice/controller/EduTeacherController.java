@@ -71,10 +71,10 @@ public class EduTeacherController {
 
     }
     //4条件查询带分页
-    @GetMapping("pageTeacherCondition/{current}/{limit}")
+    @PostMapping("pageTeacherCondition/{current}/{limit}")
     @ApiOperation("分页讲师列表")
-    public R pageTeacherCondition(@PathVariable long current, @PathVariable long limit, TeacherQuery teacherQuery){
-
+    public R pageTeacherCondition(@PathVariable long current, @PathVariable long limit, @RequestBody(required = false) TeacherQuery teacherQuery){
+                                                                                         //@RequestBody返回json数据 提交方式用post提交 get提交获取不到数据 required = false 表示参数值可以没有
         //创建page对象
         Page<EduTeacher> pageTeacher = new Page<>(current, limit);
         //构建条件
@@ -109,7 +109,16 @@ public class EduTeacherController {
         List<EduTeacher> records =  pageTeacher.getRecords();//数据list集合
         return R.ok().data("total",total).data("records",records);
     }
+        //添加讲师接口的方法
+    @PostMapping("addTeacher")
+    @ApiOperation(value = "新增讲师")
+    public R addTeacher(@ApiParam(name = "teacher",value = "讲师对象",required = true)
+                  @RequestBody EduTeacher eduTeacher){
+        boolean save = teacherService.save(eduTeacher);
 
+        return save?R.ok():R.error();
+
+    }
 
 }
 
