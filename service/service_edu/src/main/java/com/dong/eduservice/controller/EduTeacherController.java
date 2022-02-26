@@ -119,6 +119,25 @@ public class EduTeacherController {
         return save?R.ok():R.error();
 
     }
+    //讲师修改功能 1 根据讲师ID查询 2 实现讲师的修改功能
+    @GetMapping("{id}")
+    @ApiOperation(value = "根据ID查询讲师")
+    public R getById(@ApiParam(name = "id",value = "讲师ID",required = true)
+            @PathVariable String id){
+        EduTeacher teacher = teacherService.getById(id);
+        return R.ok().data("item",teacher);
+    }
+
+    //根据ID修改讲师功能
+    @PutMapping("{id}")
+    @ApiOperation(value = "根据ID修改讲师")
+    public R updateId(@ApiParam(name = "id",value = "讲师id",required = true)
+            @PathVariable String id,
+                      @ApiParam(name= "teacher",value = "讲师对象",required = true)
+                      @RequestBody EduTeacher eduTeacher){
+        teacherService.updateById(eduTeacher);
+        return R.ok();
+    }
 
 }
 
